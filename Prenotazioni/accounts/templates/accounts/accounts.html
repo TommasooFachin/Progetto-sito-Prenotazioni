@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Accesso</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'accounts/styles.css' %}">
+</head>
+<body>
+    <div class="form-container">
+        <h1>Accedi al tuo account</h1>
+        <form method="post" action="/login/">
+            {% csrf_token %}
+            <label for="username">Nome utente:</label>
+            <input type="text" id="username" name="username" required>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" required>
+            <button type="submit">Accedi</button>
+        </form>
+    </div>
+</body>
+</html>
