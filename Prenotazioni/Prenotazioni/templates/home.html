@@ -1,10 +1,21 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles.css' %}">
+
+
 <html>
 <head>
     <title>Home</title>
 </head>
+
 <body>
+    <!-- Barra di navigazione -->
+<div class="navbar-custom">
+    <div class="navbar-links">
+        <a href="{% url 'login' %}">Accedi</a>
+    </div>
+</div>
     <h1>Benvenuto nella Home</h1>
-    <a href="{% url 'accounts' %}">
+
         <button type="button">Accedi</button>
     </a>
 </body>

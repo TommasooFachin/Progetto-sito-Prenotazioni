@@ -8,14 +8,19 @@
 <body>
     <div class="form-container">
         <h1>Accedi al tuo account</h1>
-        <form method="post" action="/login/">
-            {% csrf_token %}
-            <label for="username">Nome utente:</label>
-            <input type="text" id="username" name="username" required>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit">Accedi</button>
-        </form>
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Accedi</button>
+        <p style="margin-top: 16px;">
+            Non sei registrato? <a href="{% url 'register' %}">Registrati</a>
+        </p>
+        {% if form.errors %}
+            <p style="color: red;">Email o password non corretti.</p>
+        {% endif %}
+    </form>
+    <a href="{% url 'logout' %}">Logout</a>
+
     </div>
 </body>
 </html>

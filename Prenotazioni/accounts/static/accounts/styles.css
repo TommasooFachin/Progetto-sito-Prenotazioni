@@ -17,6 +17,15 @@ body {
     width: 300px;
     text-align: center;
 }
+.form-container input[type="checkbox"] {
+    display: inline;
+    vertical-align: middle;
+    margin-right: 5px;
+}
+.form-container label {
+    display: inline;
+    font-weight: bold;
+}
 
 h1 {
     font-size: 24px;

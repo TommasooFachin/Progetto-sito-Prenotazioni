@@ -1,0 +1,61 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrazione</title>
+    <link rel="stylesheet" href="{% static 'accounts/styles.css' %}">
+</head>
+<body>
+    <div class="form-container">
+        {% if success %}
+            <div style="color: green; font-size: 18px; margin-bottom: 20px;">
+                ✔️ Registrazione effettuata con successo!<br>
+                Verrai reindirizzato tra pochi secondi...
+            </div>
+            <script>
+                setTimeout(function() {
+                    window.location.href = "{% url 'login' %}";
+                }, 3000);
+            </script>
+        {% endif %}
+        <h2>Registrazione</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.nome.label_tag }}<br>
+    {{ form.nome }}<br>
+    {{ form.cognome.label_tag }}<br>
+    {{ form.cognome }}<br>
+    {{ form.email.label_tag }}<br>
+    {{ form.email }}<br>
+    {% if form.email.errors %}
+        <div style="color: red; font-size: 14px;">
+            {{ form.email.errors.0 }}
+        </div>
+    {% endif %}
+    {{ form.password.label_tag }}<br>
+    {{ form.password }}<br>
+   
+    <button type="submit">Registrati</button>
+</form>
+        {% for message in messages %}
+            <p>{{ message }}</p>
+        {% endfor %}
+    </div>
+    <script>
+        window.onload = function() {
+            var email = document.querySelector('input[name="email"]');
+            var password = document.querySelector('input[name="password"]');
+            var isSocietario = document.querySelector('input[name="is_societario"]');
+            var nome = document.querySelector('input[name="nome"]');
+            var cognome = document.querySelector('input[name="cognome"]');
+
+            if(nome) nome.value = "";
+            if(cognome) cognome.value = "";
+            if(isSocietario) isSocietario.checked = false;
+            if(email) email.value = "";
+            if(password) password.value = "";
+        }
+    </script>
+</body>
+</html>

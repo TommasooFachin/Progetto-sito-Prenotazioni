@@ -23,4 +23,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.home, name='home'),  # URL per la home
     path('accounts/', include('accounts.urls')),  # Corretto: usa views.accounts
+
 ]
