@@ -1,6 +1,7 @@
 from django import forms
 from .models import Account
 from django.contrib.auth.hashers import make_password
+from .models import Campo
 
 class RegisterForm(forms.ModelForm):
     # ridefiniti qui perche di tipo diverso
@@ -9,7 +10,7 @@ class RegisterForm(forms.ModelForm):
 
     class Meta:
         model = Account
-        fields = ['nome', 'cognome', 'email', 'password', 'is_societario']
+        fields = ['nome', 'cognome', 'email', 'password']
 
 
     def clean_email(self):
@@ -24,3 +25,11 @@ class RegisterForm(forms.ModelForm):
         if commit:
             user.save()
         return user
+    
+
+
+
+class CampoForm(forms.ModelForm):
+    class Meta:
+        model = Campo
+        fields = ['superficie', 'tipo']  # aggiungi qui i campi che vuoi far inserire

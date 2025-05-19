@@ -1,0 +1,14 @@
+{% load static %}
+<link rel="stylesheet" href="{% static 'styles.css' %}">
+
+<html>
+<head>
+    <title>Gestione Polisportiva</title>
+</head>
+<body>
+    <h1>Benvenuto nella Gestione Polisportiva</h1>
+    <h2>Polisportiva: {{ polisportiva }}</h2>
+    <button onclick="location.href='{% url 'gestione_campi' %}'">Gestisci Campi</button>
+    <button onclick="location.href='{% url 'gestione_prenotazioni' %}'">Gestisci Prenotazioni</button>
+</body>
+</html>
