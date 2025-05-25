@@ -6,8 +6,12 @@ from django.contrib.auth.views import LoginView
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .forms import CampoForm
-from .models import Campo
-
+from .models import Campo, Polisportiva, Prenotazione
+from django.db.models import Q
+from datetime import date, datetime, timedelta
+import json
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
 
 def register(request):
     if request.method == 'POST':
@@ -32,7 +36,7 @@ class CustomLoginView(LoginView):
     def get_success_url(self):
         user = self.request.user
         if hasattr(user, 'is_societario') and user.is_societario:
-            return reverse('gestione_polisportiva')
+            return reverse('gestione_polisportiva_home')
         return reverse('home')
     
 @login_required
@@ -78,3 +82,125 @@ def gestione_campi(request):
 def gestione_prenotazioni(request):
     # Per ora solo una pagina vuota
     return render(request, 'accounts/gestione_prenotazioni.html')
+
+
+def lista_polisportive(request):
+    citta = request.GET.get('citta', '')
+    sport = request.GET.get('sport', '')
+    data = request.GET.get('data', '')
+    ora = request.GET.get('ora', '')
+
+    polisportive = Polisportiva.objects.all()
+
+    # Filtro città/società
+    if citta:
+        polisportive = polisportive.filter(
+            Q(nome__icontains=citta) | Q(città__icontains=citta)
+        )
+
+    # Filtro sport
+    if sport:
+        polisportive = polisportive.filter(campi__tipo__icontains=sport)
+
+    # Filtro per disponibilità di almeno un campo in data/ora
+    if data and ora:
+        disponibili = []
+        for p in polisportive.distinct():
+            campi_disp = p.campi.all()
+            if sport:
+                campi_disp = campi_disp.filter(tipo__icontains=sport)
+            # Escludi i campi prenotati in quella data/ora
+            campi_disp = campi_disp.exclude(
+                prenotazioni__data=data,
+                prenotazioni__ora_inizio__lte=ora,
+                prenotazioni__ora_fine__gt=ora,
+                prenotazioni__stato='accettata'
+            )
+            if campi_disp.exists():
+                disponibili.append(p.id)
+        polisportive = polisportive.filter(id__in=disponibili)
+
+    context = {
+        'polisportive': polisportive.distinct(),
+        'citta': citta,
+        'sport': sport,
+        'data': data,
+        'ora': ora,
+    }
+    return render(request, 'accounts/lista_polisportive.html', context)
+
+
+def campi_polisportiva(request, polisportiva_id):
+    data = request.GET.get('data', '')
+    if not data:
+        data = date.today().isoformat()  # Imposta la data di oggi se non fornita
+    ora = request.GET.get('ora', '')
+    sport = request.GET.get('sport', '')
+
+    polisportiva = Polisportiva.objects.get(id=polisportiva_id)
+    campi = polisportiva.campi.all()
+    if sport:
+        campi = campi.filter(tipo__icontains=sport)
+
+    orari = [
+        "08:00","08:30","09:00","09:30","10:00","10:30","11:00","11:30",
+        "12:00","12:30","13:00","13:30","14:00","14:30","15:00","15:30",
+        "16:00","16:30","17:00","17:30","18:00","18:30","19:00","19:30",
+        "20:00","20:30","21:00","21:30","22:00","22:30","23:00"
+    ]
+
+    # Costruisci una mappa: campo_id -> {ora: prenotato}
+    prenotazioni_map = {}
+    for campo in campi:
+        prenotazioni_map[campo.id] = {o: False for o in orari}
+        prenotazioni = campo.prenotazioni.filter(data=data, stato='accettata')
+        for pren in prenotazioni:
+            ora_corrente = pren.ora_inizio.strftime("%H:%M")
+            ora_fine = pren.ora_fine.strftime("%H:%M")
+            while ora_corrente != ora_fine:
+                if ora_corrente in prenotazioni_map[campo.id]:
+                    prenotazioni_map[campo.id][ora_corrente] = True
+                # aggiungi 30 minuti
+                t = datetime.strptime(ora_corrente, "%H:%M") + timedelta(minutes=30)
+                ora_corrente = t.strftime("%H:%M")
+
+    today = date.today().isoformat()  # <-- aggiungi questa riga
+
+    return render(request, 'accounts/campi_polisportiva.html', {
+        'polisportiva': polisportiva,
+        'campi': campi,
+        'data': data,
+        'ora': ora,
+        'sport': sport,
+        'orari': orari,
+        'prenotazioni_map': prenotazioni_map,
+        'today': today, 
+    })
+
+@csrf_exempt
+@login_required
+def prenota_ajax(request):
+    if request.method == "POST":
+        data = json.loads(request.body)
+        campo_id = data.get('campo_id')
+        data_pren = data.get('data')
+        orari = data.get('orari', [])
+        campo = Campo.objects.get(id=campo_id)
+        if not orari:
+            return JsonResponse({'success': False, 'error': 'Nessun orario selezionato'})
+        # Ordina gli orari
+        orari.sort()
+        ora_inizio = datetime.strptime(orari[0], "%H:%M")
+        ora_fine = (datetime.strptime(orari[-1], "%H:%M") + timedelta(minutes=30)).time()
+        durata = len(orari) * 30
+        Prenotazione.objects.create(
+            campo=campo,
+            account=request.user,
+            data=data_pren,
+            ora_inizio=ora_inizio.time(),
+            ora_fine=ora_fine,
+            durata=durata,
+            costo=5.00 * len(orari),  # opzionale: costo proporzionale
+            stato='accettata'  # stato iniziale della prenotazione
+        )
+        return JsonResponse({'success': True})

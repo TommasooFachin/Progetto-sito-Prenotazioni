@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Campi</title>
+    {% load dict_extras %}
+    {% load static %}
+    {% if user.is_authenticated %}
+    <script>window.isLoggedIn = true;</script>
+    {% else %}
+    <script>window.isLoggedIn = false;</script>
+    {% endif %}
+    <link rel="stylesheet" href="{% static 'accounts/styles.css' %}">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    {% include 'accounts/navbar2.html' %}
+    <h2>Campi disponibili per {{ polisportiva.nome }} ({{ polisportiva.città }})</h2>
+    <!-- Selettore giorno e pulsante "Vai a oggi" -->
+    <div class="d-flex justify-content-center mb-3">
+        <form method="get" class="d-flex align-items-center" style="gap: 8px;">
+            <input type="hidden" name="sport" value="{{ sport }}">
+            <input type="hidden" name="ora" value="{{ ora }}">
+            <input type="date" name="data" value="{{ data }}" class="form-control" style="max-width: 180px;">
+            <button type="submit" class="btn btn-primary">Cambia giorno</button>
+            <a href="?data={{ today }}&sport={{ sport }}&ora={{ ora }}" class="btn btn-secondary ms-2" style="white-space:nowrap;">Vai a oggi</a>
+        </form>
+    </div>
+    
+    <!-- Pulsante conferma prenotazione -->
+    <div class="mb-4">
+        <button id="conferma-prenotazione" class="btn btn-success w-100" style="font-size:1.5em; font-weight:bold;">
+            &#10004; CONFERMA PRENOTAZIONE
+        </button>
+    </div>
+    <div class="tabella-orari-wrapper">
+        <table class="tabella-orari">
+            <thead>
+                <tr>
+                    <th>Orario</th>
+                    {% for campo in campi %}
+                    <th>
+                            <span class="campo-nome">{{ campo.nome }}</span>
+                            <span class="campo-tipo">{{ campo.tipo|title }}</span>
+                        </th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for ora in orari %}
+                <tr>
+                    <td style="font-weight:bold;">{{ ora }}</td>
+                    {% for campo in campi %}
+                        {% with prenotato=prenotazioni_map|dict_get:campo.id|dict_get:ora %}
+                            {% if not prenotato %}
+                                <td class="disponibile" data-campo="{{ campo.id }}" data-ora="{{ ora }}"></td>
+                            {% else %}
+                                <td class="occupato"></td>
+                            {% endif %}
+                        {% endwith %}
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    <div style="text-align:center; margin-bottom:40px;">
+        <a href="{% url 'lista_polisportive' %}?citta={{ request.GET.citta }}&sport={{ sport }}&data={{ data }}&ora={{ ora }}" style="color:#2980b9; font-weight:bold;">Torna alle polisportive</a>
+    </div>
+    <script>
+    let isMouseDown = false;
+    let startCell = null;
+    let selectedCells = [];
+
+    document.querySelectorAll('.tabella-orari').forEach(function(tabella) {
+        function clearSelection() {
+            selectedCells.forEach(td => td.classList.remove('selected-multi'));
+            selectedCells = [];
+        }
+
+        tabella.addEventListener('mousedown', function(e) {
+            let td = e.target.closest('td.disponibile');
+            if (!td) return;
+            isMouseDown = true;
+            startCell = td;
+            clearSelection();
+            td.classList.add('selected-multi');
+            selectedCells.push(td);
+            e.preventDefault();
+        });
+
+        tabella.addEventListener('mouseover', function(e) {
+            if (!isMouseDown || !startCell) return;
+            let td = e.target.closest('td.disponibile');
+            if (!td) return;
+            let colIndex = startCell.cellIndex;
+            if (td.cellIndex !== colIndex) return;
+            let trs = Array.from(tabella.querySelectorAll('tbody tr'));
+            let startRow = startCell.parentElement.rowIndex;
+            let endRow = td.parentElement.rowIndex;
+            let min = Math.min(startRow, endRow);
+            let max = Math.max(startRow, endRow);
+            let range = [];
+            for (let i = min; i <= max && range.length < 4; i++) {
+                let cell = trs[i - 1].children[colIndex];
+                if (!cell.classList.contains('disponibile')) break;
+                range.push(cell);
+            }
+            clearSelection();
+            range.forEach(cell => cell.classList.add('selected-multi'));
+            selectedCells = range;
+        });
+
+        document.addEventListener('mouseup', function() {
+            isMouseDown = false;
+            startCell = null;
+        });
+
+        tabella.addEventListener('click', function(e) {
+            let td = e.target.closest('td.disponibile');
+            if (!td) return;
+            clearSelection();
+            td.classList.add('selected-multi');
+            selectedCells = [td];
+        });
+    });
+
+    // Conferma prenotazione
+    document.getElementById('conferma-prenotazione').addEventListener('click', function() {
+        if (!window.isLoggedIn) {
+            alert('Prima devi effettuare il login');
+            return;
+        }
+        if (selectedCells.length === 0) {
+            alert('Nessuno slot selezionato');
+            return;
+        }
+        // Ricava info slot selezionati
+        let campoId = selectedCells[0].getAttribute('data-campo');
+        let campoNome = document.querySelectorAll('.tabella-orari th .campo-nome')[selectedCells[0].cellIndex - 1].innerText;
+        let data = "{{ data }}";
+        let orari = selectedCells.map(td => td.getAttribute('data-ora'));
+        let orariStr = orari.join(', ');
+        let msg = `Sei sicuro di voler prenotare\nCampo: ${campoNome}\nData: ${data}\nOrario: ${orariStr}?`;
+        if (confirm(msg)) {
+            // AJAX POST per prenotare
+            fetch("{% url 'prenota_ajax' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": "{{ csrf_token }}"
+                },
+                body: JSON.stringify({
+                    campo_id: campoId,
+                    data: data,
+                    orari: orari
+                })
+            })
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    alert('Prenotazione effettuata con successo!');
+                    window.location.reload();
+                } else {
+                    alert(res.error || 'Errore nella prenotazione');
+                }
+            })
+            .catch(() => alert('Errore di rete'));
+        }
+    });
+    </script>
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

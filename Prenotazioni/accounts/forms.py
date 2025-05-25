@@ -32,4 +32,4 @@ class RegisterForm(forms.ModelForm):
 class CampoForm(forms.ModelForm):
     class Meta:
         model = Campo
-        fields = ['superficie', 'tipo']  # aggiungi qui i campi che vuoi far inserire
+        fields = ['nome', 'superficie', 'tipo']  # campi da inserire dall'admin

@@ -1,0 +1,43 @@
+<!-- Bootstrap 5 Navbar -->
+ 
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+  <div class="container-fluid">
+    <a class="navbar-brand" href="{% url 'home' %}">Prenotazioni</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'gestione_polisportiva_home' %}">Gestione Polisportiva</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'gestione_campi' %}">Campi</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'gestione_prenotazioni' %}">Prenotazioni</a>
+        </li>
+      </ul>
+      <ul class="navbar-nav mb-2 mb-lg-0">
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <span class="navbar-text me-2">Ciao, {{ user.nome }}</span>
+        </li>
+        <li class="nav-item">
+          <form action="{% url 'logout' %}" method="post" style="display:inline;">
+            {% csrf_token %}
+            <button class="btn btn-outline-light btn-sm" type="submit">Logout</button>
+          </form>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'login' %}">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'register' %}">Registrati</a>
+        </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>

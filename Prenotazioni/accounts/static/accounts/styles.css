@@ -1,12 +1,21 @@
+
+/* Centra il contenuto della pagina */
 body {
-    font-family: Arial, sans-serif;
+    min-height: 100vh;
+    justify-content: center;
+    align-items: center;
     background-color: #f4f4f9;
     margin: 0;
     padding: 0;
+}
+
+/* Solo per la pagina di login */
+.login-page {
+    min-height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    background-color: #f4f4f9;
 }
 
 .form-container {
@@ -62,4 +71,134 @@ button {
 
 button:hover {
     background-color: #0056b3;
+}
+
+/* --- Stili tabella orari campi --- */
+.tabella-orari-wrapper {
+    width: 100%;
+    overflow-x: auto;
+    margin: 0 auto 30px auto;
+    border-radius: 8px;
+    background: #fff;
+    box-shadow: 0 2px 12px #0001;
+    padding-bottom: 8px;
+}
+
+.tabella-orari {
+    border-collapse: collapse;
+    min-width: 600px;
+    width: max-content;
+    margin: 40px auto 30px auto;
+    background: #fff;
+    box-shadow: 0 2px 12px #0001;
+}
+
+.tabella-orari th, .tabella-orari td {
+    border: 1px solid #b2f2bb;
+    text-align: center;
+    white-space: nowrap;
+    width: 120px;
+    height: 38px;
+    font-size: 1.1em;
+}
+
+.tabella-orari th {
+    background: #eee2ce;
+    color: #000000;
+    font-size: 1.15em;
+    letter-spacing: 1px;
+    padding: 4px 8px;
+}
+
+.tabella-orari th span {
+    display: block;
+    word-break: break-word;
+    font-size: 1em;
+    max-width: 120px;
+    margin: 0 auto;
+}
+
+.tabella-orari td.occupato {
+    background: #f8f9fa;
+    color: #bbb;
+    cursor: not-allowed;
+}
+
+.tabella-orari td.disponibile {
+    background: #fff;
+    color: #2980b9;
+    cursor: pointer;
+    transition: background 0.2s;
+    position: relative;
+}
+
+.tabella-orari td.disponibile.selected {
+    background: #2980b9;
+    color: #fff;
+    font-weight: bold;
+}
+
+.prenota-btn {
+    display: none;
+    width: 100%;
+    background: #2980b9;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    height: 32px;
+    font-size: 1em;
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+.tabella-orari td.disponibile.selected .prenota-btn {
+    display: block;
+}
+
+.tabella-orari td.disponibile.selected span.ora-label {
+    display: block;
+    margin-bottom: 2px;
+}
+
+h2 {
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    font-size: 2em;
+    font-weight: bold;
+}
+/* Evidenzia il nome del campo in blu e il tipo in grigio */
+.tabella-orari th .campo-nome {
+    color: #2980b9;
+    font-weight: bold;
+    font-size: 1.08em;
+    margin-bottom: 2px;
+    display: block;
+}
+.tabella-orari th .campo-tipo {
+    color: #555;
+    font-size: 0.95em;
+    font-weight: normal;
+    display: block;
+    margin-top: 0;
+}
+/* Evidenzia più celle selezionate */
+.tabella-orari td.disponibile.selected-multi {
+    background: #2980b9;
+    color: #fff;
+    font-weight: bold;
+}
+.selected-multi {
+    background: #3498db !important;
+    color: #fff;
+}
+
+td.occupato {
+    background-color: #e84634 !important; /* rosso chiaro */
+    cursor: not-allowed;
+}
+
+
+@media (max-width: 900px) {
+    .tabella-orari th, .tabella-orari td { font-size: 0.95em; width: 80px; }
 }

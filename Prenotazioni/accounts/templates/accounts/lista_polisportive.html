@@ -1,0 +1,13 @@
+<h2>Polisportive trovate</h2>
+<ul>
+    {% for polisportiva in polisportive %}
+        <li>
+            <a href="{% url 'campi_polisportiva' polisportiva.id %}?data={{ data }}&ora={{ ora }}&sport={{ sport }}">
+                {{ polisportiva.nome }} ({{ polisportiva.città }})
+            </a>
+        </li>
+    {% empty %}
+        <li>Nessuna polisportiva trovata.</li>
+    {% endfor %}
+</ul>
+<a href="{% url 'home' %}">Torna alla home</a>

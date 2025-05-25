@@ -6,9 +6,11 @@ urlpatterns = [
     path('login/', views.CustomLoginView.as_view(), name='login'),
     path('logout/', auth_views.LogoutView.as_view(next_page='home'), name='logout'),
     path('register/', views.register, name='register'),
-    path('gestione_polisportiva/', views.gestione_polisportiva_home, name='gestione_polisportiva'),
+    path('gestione_polisportiva_home/', views.gestione_polisportiva_home, name='gestione_polisportiva_home'),
     path('gestione_campi/', views.gestione_campi, name='gestione_campi'),
     path('gestione_prenotazioni/', views.gestione_prenotazioni, name='gestione_prenotazioni'),
+    path('polisportive/', views.lista_polisportive, name='lista_polisportive'),
+    path('polisportiva/<int:polisportiva_id>/campi/', views.campi_polisportiva, name='campi_polisportiva'),
+    path('prenota_ajax/', views.prenota_ajax, name='prenota_ajax'),
+
 ]
-
-

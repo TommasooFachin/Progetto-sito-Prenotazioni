@@ -3,10 +3,15 @@
 
 <html>
 <head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <title>Gestione Polisportiva</title>
+    
 </head>
 <body>
-    <h1>Benvenuto nella Gestione Polisportiva</h1>
+    {% include 'accounts/navbar.html' %}
+    <h1>Gestione Polisportiva</h1>
+    <br>
     <h2>Polisportiva: {{ polisportiva }}</h2>
     <button onclick="location.href='{% url 'gestione_campi' %}'">Gestisci Campi</button>
     <button onclick="location.href='{% url 'gestione_prenotazioni' %}'">Gestisci Prenotazioni</button>

@@ -6,6 +6,7 @@
     <title>Gestione Campi</title>
 </head>
 <body>
+    {% include 'accounts/_auth_buttons.html' %}
     <h1>Gestione Campi per {{ polisportiva }}</h1>
     <h2>Aggiungi un nuovo campo</h2>
     <form method="post">
@@ -14,19 +15,18 @@
         <button type="submit">Aggiungi campo</button>
     </form>
     <h2>Campi esistenti</h2>
-    <ul>
-        {% for campo in campi %}
-            <li>
-                {{ campo.tipo }} - {{ campo.superficie }}
-                <form method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button type="submit" name="elimina" value="{{ campo.id }}">Elimina</button>
-                </form>
-            </li>
-        {% empty %}
-            <li>Nessun campo presente.</li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'gestione_polisportiva' %}">Torna indietro</a>
-</body>
+<ul>
+    {% for campo in campi %}
+        <li>
+            <strong>{{ campo.nome }}</strong> - {{ campo.tipo }} - {{ campo.superficie }}
+            <form method="post" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" name="elimina" value="{{ campo.id }}">Elimina</button>
+            </form>
+        </li>
+    {% empty %}
+        <li>Nessun campo presente.</li>
+    {% endfor %}
+</ul>
+    <a href="{% url 'gestione_polisportiva_home' %}">Torna indietro</a></body>
 </html>

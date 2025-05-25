@@ -55,9 +55,13 @@ class Polisportiva(models.Model):
 
 class Campo(models.Model):
     id = models.AutoField(primary_key=True)
+    nome = models.CharField(max_length=100)
     superficie = models.CharField(max_length=20, choices=[('terra', 'terra'), ('sintetico', 'sintetico'), ('erba', 'erba'), ('cemento', 'cemento')])
     tipo = models.CharField(max_length=20, choices=[('calcio a 5', 'calcio a 5'), ('tennis', 'tennis'), ('padel', 'padel')])
     polisportiva = models.ForeignKey(Polisportiva, on_delete=models.CASCADE, related_name='campi')
+
+    def __str__(self):
+        return self.nome
 
 class Prenotazione(models.Model):
     id=models.AutoField(primary_key=True)
@@ -66,7 +70,12 @@ class Prenotazione(models.Model):
     ora_fine = models.TimeField()
     durata = models.IntegerField()
     costo = models.DecimalField(max_digits=10, decimal_places=2)
-    stato= models.CharField(max_length=20, choices=[('in attesa', 'In attesa'), ('accettata', 'accettata'), ('annullata', 'Annullata')])
+    #stato= models.CharField(max_length=20, choices=[('in attesa', 'in attesa'), ('accettata', 'accettata'), ('annullata', 'annullata')])
+    stato = models.CharField(
+        max_length=20,
+        choices=[('in attesa', 'in attesa'), ('accettata', 'accettata'), ('annullata', 'annullata')],
+        default='accettata'
+    )
     account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='prenotazioni')
     campo = models.ForeignKey(Campo, on_delete=models.CASCADE, related_name='prenotazioni')
     class Meta:
