@@ -9,6 +9,11 @@
         <li class="nav-item">
           <a class="nav-link" href="{% url 'lista_polisportive' %}">Polisportive</a>
         </li>
+        {% if user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link" href="{% url 'mie_prenotazioni' %}">Mie prenotazioni</a>
+        </li>
+        {% endif %}
       </ul>
       <ul class="navbar-nav mb-2 mb-lg-0">
         <li class="nav-item">

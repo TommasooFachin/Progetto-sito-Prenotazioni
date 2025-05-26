@@ -12,6 +12,8 @@ from datetime import date, datetime, timedelta
 import json
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.shortcuts import render, redirect, get_object_or_404
 
 def register(request):
     if request.method == 'POST':
@@ -204,3 +206,30 @@ def prenota_ajax(request):
             stato='accettata'  # stato iniziale della prenotazione
         )
         return JsonResponse({'success': True})
+    
+@login_required
+def mie_prenotazioni(request):
+    prenotazioni = Prenotazione.objects.filter(account=request.user).order_by('-data', 'ora_inizio')
+    if request.method == "POST":
+        elimina_id = request.POST.get("elimina")
+        if elimina_id:
+            Prenotazione.objects.filter(id=elimina_id, account=request.user).delete()
+            return redirect('mie_prenotazioni')
+    return render(request, 'accounts/mie_prenotazioni.html', {'prenotazioni': prenotazioni})
+
+
+
+def is_societario(user):
+    return user.is_authenticated and user.is_societario  # Adatta secondo il tuo modello utente
+
+@login_required
+@user_passes_test(is_societario)
+def gestione_prenotazioni(request):
+    polisportiva = request.user.polisportiva  # Prendi la polisportiva dell'utente societario
+    prenotazioni = Prenotazione.objects.filter(campo__polisportiva=polisportiva)
+    if request.method == "POST":
+        pren_id = request.POST.get("elimina")
+        pren = get_object_or_404(Prenotazione, id=pren_id, campo__polisportiva=polisportiva)
+        pren.delete()
+        return redirect('gestione_prenotazioni')
+    return render(request, 'accounts/gestione_prenotazioni.html', {'prenotazioni': prenotazioni})

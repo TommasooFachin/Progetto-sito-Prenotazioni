@@ -197,7 +197,107 @@ td.occupato {
     background-color: #e84634 !important; /* rosso chiaro */
     cursor: not-allowed;
 }
+    .table thead th {
+        vertical-align: middle;
+        text-align: center;
+    }
+    .table td, .table th {
+        text-align: center;
+        vertical-align: middle;
+    }
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
 
+/* Centra la container e limita la larghezza */
+.container {
+    max-width: 700px;
+    margin: 40px auto;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    padding: 32px;
+}
+
+/* Tabella polisportive stile colorato */
+.tabella-polisportive {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 24px;
+    margin-left: auto;
+    margin-right: auto;
+    background: #fff;
+    box-shadow: 0 2px 8px #0001;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tabella-polisportive th {
+    background: #4ba379;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.15em;
+    border-bottom: 2px solid #2471a3;
+}
+
+.tabella-polisportive td {
+    padding: 14px 10px;
+    font-size: 1.1em;
+    border-bottom: 1px solid #eaf1fb;
+}
+
+.tabella-polisportive tr:nth-child(even) {
+    background: #f0f6fb;
+}
+
+.tabella-polisportive tr:hover {
+    background: #d6eaf8;
+    transition: background 0.2s;
+}
+
+/* Bottone colorato */
+.btn {
+    display: inline-block;
+    padding: 8px 18px;
+    background: #4ba379;
+    color: #fff !important;
+    border: none;
+    border-radius: 8px;
+    text-decoration: none;
+    transition: background 0.2s, box-shadow 0.2s;
+    cursor: pointer;
+    font-weight: 600;
+    box-shadow: 0 2px 8px #0001;
+    font-size: 1.15em;
+    letter-spacing: 1px;
+    text-align: center;
+}
+
+.btn:hover {
+    background: #1a8752;
+    color: #fff;
+    box-shadow: 0 4px 12px #17915a33;
+}
+
+/* Titolo colorato */
+h2 {
+    text-align: center;
+    margin-top: 30px;
+    margin-bottom: 30px;
+    font-size: 2.2em;
+    font-weight: bold;
+    color: #222e50;
+    letter-spacing: 1px;
+}
+
+/* Messaggio vuoto */
+.empty {
+    color: #b94a48;
+    font-style: italic;
+    margin-bottom: 20px;
+    text-align: center;
+}
 
 @media (max-width: 900px) {
     .tabella-orari th, .tabella-orari td { font-size: 0.95em; width: 80px; }

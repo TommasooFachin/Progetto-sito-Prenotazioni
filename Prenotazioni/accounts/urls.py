@@ -12,5 +12,7 @@ urlpatterns = [
     path('polisportive/', views.lista_polisportive, name='lista_polisportive'),
     path('polisportiva/<int:polisportiva_id>/campi/', views.campi_polisportiva, name='campi_polisportiva'),
     path('prenota_ajax/', views.prenota_ajax, name='prenota_ajax'),
+    path('mie-prenotazioni/', views.mie_prenotazioni, name='mie_prenotazioni'),
+
 
 ]

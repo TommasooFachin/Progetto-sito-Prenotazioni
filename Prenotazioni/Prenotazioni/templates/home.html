@@ -13,14 +13,8 @@
 
 <body>
     <!-- Barra di navigazione -->
-    {% if user.is_authenticated %}
-        <form action="{% url 'logout' %}" method="post" style="display:inline;">
-            {% csrf_token %}
-            <button type="submit">Logout</button>
-        </form>
-    {% else %}
-        <a href="{% url 'login' %}"><button>Login</button></a>
-    {% endif %}
+    {% include "accounts/navbar2.html" %}
+ 
 
     
     <h1><center>Prenota il tuo sport preferito!</center></h1>

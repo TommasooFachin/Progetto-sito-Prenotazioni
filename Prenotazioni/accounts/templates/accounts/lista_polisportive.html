@@ -1,13 +1,43 @@
-<h2>Polisportive trovate</h2>
-<ul>
-    {% for polisportiva in polisportive %}
-        <li>
-            <a href="{% url 'campi_polisportiva' polisportiva.id %}?data={{ data }}&ora={{ ora }}&sport={{ sport }}">
-                {{ polisportiva.nome }} ({{ polisportiva.città }})
-            </a>
-        </li>
-    {% empty %}
-        <li>Nessuna polisportiva trovata.</li>
-    {% endfor %}
-</ul>
-<a href="{% url 'home' %}">Torna alla home</a>
+{% load static %}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    {% include "accounts/navbar2.html" %}
+    <meta charset="UTF-8">
+    <title>Polisportive trovate</title>
+    <link rel="stylesheet" href="{% static 'accounts/styles.css' %}">
+</head>
+<body>
+    <div class="container">
+        <h2>Polisportive trovate</h2>
+        {% if polisportive %}
+        <table class="tabella-polisportive">
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>Città</th>
+                    <th>Vai ai campi</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for polisportiva in polisportive %}
+                <tr>
+                    <td>{{ polisportiva.nome }}</td>
+                    <td>{{ polisportiva.città }}</td>
+                    <td>
+                        <a class="btn" href="{% url 'campi_polisportiva' polisportiva.id %}?data={{ data }}&ora={{ ora }}&sport={{ sport }}">
+                            Visualizza campi
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+            <div class="empty">Nessuna polisportiva trovata.</div>
+        {% endif %}
+        <a href="{% url 'home' %}" class="btn">Torna alla home</a>
+    </div>
+</body>
+</html>
