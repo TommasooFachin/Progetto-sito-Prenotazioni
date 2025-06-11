@@ -33,6 +33,13 @@
                     </button>
                 </form>
             </td>
+            <td>
+                {% if p.pagato %}
+                    <span class="badge bg-success">Pagato</span>
+                {% else %}
+                    <span class="badge bg-warning text-dark">Da pagare</span>
+                {% endif %}
+            </td>
         </tr>
     {% endfor %}
     </tbody>

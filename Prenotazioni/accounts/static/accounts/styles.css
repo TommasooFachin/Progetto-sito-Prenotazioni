@@ -257,7 +257,9 @@ td.occupato {
 }
 
 /* Bottone colorato */
-.btn {
+/* Solo bottoni fuori dalla navbar */
+.container .btn,
+.tabella-polisportive .btn {
     display: inline-block;
     padding: 8px 18px;
     background: #4ba379;
@@ -274,7 +276,8 @@ td.occupato {
     text-align: center;
 }
 
-.btn:hover {
+.container .btn:hover,
+.tabella-polisportive .btn:hover {
     background: #1a8752;
     color: #fff;
     box-shadow: 0 4px 12px #17915a33;
@@ -296,6 +299,31 @@ h2 {
     color: #b94a48;
     font-style: italic;
     margin-bottom: 20px;
+    text-align: center;
+}
+/* Solo per la pagina di registrazione */
+.register-page {
+    min-height: 100vh;
+    background: #f6f6fb;
+}
+.register-wrapper {
+    min-height: 90vh;
+    display: flex;
+    flex-direction: column;
+}
+.register-center {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+/* Modifica la larghezza del form di registrazione */
+.form-container {
+    background-color: #ffffff;
+    padding: 20px 30px;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    width: 380px; /* <--- aumenta qui la larghezza */
     text-align: center;
 }
 

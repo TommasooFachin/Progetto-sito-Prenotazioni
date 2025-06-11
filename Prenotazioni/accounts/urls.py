@@ -13,6 +13,7 @@ urlpatterns = [
     path('polisportiva/<int:polisportiva_id>/campi/', views.campi_polisportiva, name='campi_polisportiva'),
     path('prenota_ajax/', views.prenota_ajax, name='prenota_ajax'),
     path('mie-prenotazioni/', views.mie_prenotazioni, name='mie_prenotazioni'),
-
+    path('polisportiva/<int:pk>/', views.dettaglio_polisportiva, name='dettaglio_polisportiva'),
+    path('pagamento_online/<int:pren_id>/', views.pagamento_online, name='pagamento_online'),
 
 ]

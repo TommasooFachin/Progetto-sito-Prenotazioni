@@ -1,6 +1,12 @@
+
+{% load static %}
+
 <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
   <div class="container-fluid">
-    <a class="navbar-brand" href="{% url 'home' %}">Prenotazioni</a>
+    <a class="navbar-brand d-flex align-items-center" href="{% url 'home' %}">
+      <img src="{% static 'accounts/logo.png' %}" alt="Logo" width="38" height="38" class="me-2" style="background:transparent; border-radius:8px;">
+      <span>SportBooking</span>
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav2" aria-controls="navbarNav2" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
@@ -29,7 +35,7 @@
         <li class="nav-item">
           <form action="{% url 'logout' %}" method="post" style="display:inline;">
             {% csrf_token %}
-            <button class="btn btn-outline-light btn-sm" type="submit">Logout</button>
+            <button class="btn btn-dark" type="submit">Logout</button>
           </form>
         </li>
         {% else %}

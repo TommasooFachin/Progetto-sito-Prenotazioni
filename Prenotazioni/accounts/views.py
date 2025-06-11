@@ -187,25 +187,37 @@ def prenota_ajax(request):
         campo_id = data.get('campo_id')
         data_pren = data.get('data')
         orari = data.get('orari', [])
+        modalita_pagamento = data.get('modalita_pagamento', 'struttura')
         campo = Campo.objects.get(id=campo_id)
         if not orari:
             return JsonResponse({'success': False, 'error': 'Nessun orario selezionato'})
-        # Ordina gli orari
         orari.sort()
         ora_inizio = datetime.strptime(orari[0], "%H:%M")
         ora_fine = (datetime.strptime(orari[-1], "%H:%M") + timedelta(minutes=30)).time()
         durata = len(orari) * 30
-        Prenotazione.objects.create(
+        pren = Prenotazione.objects.create(
             campo=campo,
             account=request.user,
             data=data_pren,
             ora_inizio=ora_inizio.time(),
             ora_fine=ora_fine,
             durata=durata,
-            costo=5.00 * len(orari),  # opzionale: costo proporzionale
-            stato='accettata'  # stato iniziale della prenotazione
+            costo=5.00 * len(orari),
+            stato='accettata',
+            pagato=False  # di default
         )
+        if modalita_pagamento == 'online':
+            # Redirect a pagina di pagamento virtuale
+            return JsonResponse({'success': True, 'redirect': f'/accounts/pagamento_online/{pren.id}/'})
         return JsonResponse({'success': True})
+@login_required
+def pagamento_online(request, pren_id):
+    pren = get_object_or_404(Prenotazione, id=pren_id, account=request.user)
+    if request.method == "POST":
+        pren.pagato = True
+        pren.save()
+        return render(request, 'accounts/pagamento_successo.html')
+    return render(request, 'accounts/pagamento_online.html', {'pren': pren})
     
 @login_required
 def mie_prenotazioni(request):
@@ -218,9 +230,8 @@ def mie_prenotazioni(request):
     return render(request, 'accounts/mie_prenotazioni.html', {'prenotazioni': prenotazioni})
 
 
-
 def is_societario(user):
-    return user.is_authenticated and user.is_societario  # Adatta secondo il tuo modello utente
+        return user.is_authenticated and user.is_societario  # Adatta secondo il tuo modello utente
 
 @login_required
 @user_passes_test(is_societario)
@@ -233,3 +244,7 @@ def gestione_prenotazioni(request):
         pren.delete()
         return redirect('gestione_prenotazioni')
     return render(request, 'accounts/gestione_prenotazioni.html', {'prenotazioni': prenotazioni})
+
+def dettaglio_polisportiva(request, pk):
+    polisportiva = get_object_or_404(Polisportiva, pk=pk)
+    return render(request, 'accounts/dettaglio_polisportiva.html', {'polisportiva': polisportiva})

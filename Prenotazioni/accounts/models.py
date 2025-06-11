@@ -70,6 +70,7 @@ class Prenotazione(models.Model):
     ora_fine = models.TimeField()
     durata = models.IntegerField()
     costo = models.DecimalField(max_digits=10, decimal_places=2)
+    pagato = models.BooleanField(default=False)
     #stato= models.CharField(max_length=20, choices=[('in attesa', 'in attesa'), ('accettata', 'accettata'), ('annullata', 'annullata')])
     stato = models.CharField(
         max_length=20,
