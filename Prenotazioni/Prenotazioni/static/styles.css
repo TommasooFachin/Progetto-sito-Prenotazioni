@@ -12,7 +12,7 @@
     z-index: 100;
     
 }body {
-    padding-top: 60px; /* o più se la barra è più alta */
+    padding-top: 60px;
 }
 
 .navbar-links {

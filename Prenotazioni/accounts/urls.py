@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views
 from django.contrib.auth import views as auth_views
+from .views import elimina_corso
 
 urlpatterns = [
     path('login/', views.CustomLoginView.as_view(), name='login'),
@@ -15,5 +16,7 @@ urlpatterns = [
     path('mie-prenotazioni/', views.mie_prenotazioni, name='mie_prenotazioni'),
     path('polisportiva/<int:pk>/', views.dettaglio_polisportiva, name='dettaglio_polisportiva'),
     path('pagamento_online/<int:pren_id>/', views.pagamento_online, name='pagamento_online'),
+    path('gestione_corsi/', views.gestione_corsi, name='gestione_corsi'),
+    path('gestione_corsi/elimina/<int:corso_id>/', elimina_corso, name='elimina_corso'),
 
 ]

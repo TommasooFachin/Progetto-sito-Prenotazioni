@@ -1,7 +1,7 @@
 from django import forms
 from .models import Account
 from django.contrib.auth.hashers import make_password
-from .models import Campo
+from .models import Campo, Corso
 
 class RegisterForm(forms.ModelForm):
     # ridefiniti qui perche di tipo diverso
@@ -33,3 +33,15 @@ class CampoForm(forms.ModelForm):
     class Meta:
         model = Campo
         fields = ['nome', 'superficie', 'tipo']  # campi da inserire dall'admin
+
+
+class CorsoForm(forms.ModelForm):
+    class Meta:
+        model = Corso
+        fields = ['nome', 'campo', 'data_inizio', 'data_fine', 'ora_inizio', 'ora_fine']
+        widgets = {
+            'data_inizio': forms.DateInput(attrs={'type': 'date'}),
+            'data_fine': forms.DateInput(attrs={'type': 'date'}),
+            'ora_inizio': forms.TimeInput(attrs={'type': 'time'}),
+            'ora_fine': forms.TimeInput(attrs={'type': 'time'}),
+        }

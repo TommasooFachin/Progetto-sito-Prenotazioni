@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, BaseUserManager
+from django.contrib.auth.models import User
 
 class AccountManager(BaseUserManager):
     def create_user(self, email, password=None, nome='', cognome='', is_societario=False, **extra_fields):
@@ -61,7 +62,19 @@ class Campo(models.Model):
     polisportiva = models.ForeignKey(Polisportiva, on_delete=models.CASCADE, related_name='campi')
 
     def __str__(self):
-        return self.nome
+        return f"{self.nome} ({self.tipo}, {self.superficie})"
+
+class Corso(models.Model):
+    nome = models.CharField(max_length=100)
+    campo = models.ForeignKey(Campo, on_delete=models.CASCADE, related_name='corsi')
+    data_inizio = models.DateField()
+    data_fine = models.DateField()
+    ora_inizio = models.TimeField()
+    ora_fine = models.TimeField()
+    account = models.ForeignKey(Account, on_delete=models.CASCADE, related_name='corsi_gestiti')  # account societario
+
+    def __str__(self):
+        return f"{self.nome} ({self.campo.nome})"
 
 class Prenotazione(models.Model):
     id=models.AutoField(primary_key=True)
@@ -82,3 +95,5 @@ class Prenotazione(models.Model):
     class Meta:
         unique_together = ('campo', 'data', 'ora_inizio', 'ora_fine')
         
+
+

@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import RegisterForm 
-from .models import Account
 from django.contrib.auth.views import LoginView
 from django.urls import reverse
 from django.contrib.auth.decorators import login_required
 from .forms import CampoForm
-from .models import Campo, Polisportiva, Prenotazione
+from .models import Campo, Polisportiva, Prenotazione, Corso, Account
+from .forms import CorsoForm
 from django.db.models import Q
 from datetime import date, datetime, timedelta
 import json
@@ -155,6 +155,7 @@ def campi_polisportiva(request, polisportiva_id):
     prenotazioni_map = {}
     for campo in campi:
         prenotazioni_map[campo.id] = {o: False for o in orari}
+        # Blocca slot già prenotati
         prenotazioni = campo.prenotazioni.filter(data=data, stato='accettata')
         for pren in prenotazioni:
             ora_corrente = pren.ora_inizio.strftime("%H:%M")
@@ -162,11 +163,20 @@ def campi_polisportiva(request, polisportiva_id):
             while ora_corrente != ora_fine:
                 if ora_corrente in prenotazioni_map[campo.id]:
                     prenotazioni_map[campo.id][ora_corrente] = True
-                # aggiungi 30 minuti
+                t = datetime.strptime(ora_corrente, "%H:%M") + timedelta(minutes=30)
+                ora_corrente = t.strftime("%H:%M")
+        # Blocca slot occupati dai corsi
+        corsi = campo.corsi.filter(data_inizio__lte=data, data_fine__gte=data)
+        for corso in corsi:
+            ora_corrente = corso.ora_inizio.strftime("%H:%M")
+            ora_fine = corso.ora_fine.strftime("%H:%M")
+            while ora_corrente != ora_fine:
+                if ora_corrente in prenotazioni_map[campo.id]:
+                    prenotazioni_map[campo.id][ora_corrente] = True
                 t = datetime.strptime(ora_corrente, "%H:%M") + timedelta(minutes=30)
                 ora_corrente = t.strftime("%H:%M")
 
-    today = date.today().isoformat()  # <-- aggiungi questa riga
+    today = date.today().isoformat()
 
     return render(request, 'accounts/campi_polisportiva.html', {
         'polisportiva': polisportiva,
@@ -176,8 +186,8 @@ def campi_polisportiva(request, polisportiva_id):
         'sport': sport,
         'orari': orari,
         'prenotazioni_map': prenotazioni_map,
-        'today': today, 
-    })
+        'today': today,
+})
 
 @csrf_exempt
 @login_required
@@ -219,16 +229,26 @@ def pagamento_online(request, pren_id):
         return render(request, 'accounts/pagamento_successo.html')
     return render(request, 'accounts/pagamento_online.html', {'pren': pren})
     
+from datetime import datetime, timedelta
+
 @login_required
 def mie_prenotazioni(request):
     prenotazioni = Prenotazione.objects.filter(account=request.user).order_by('-data', 'ora_inizio')
+    cancellabili = []
+    now = datetime.now()
+    for p in prenotazioni:
+        dt_inizio = datetime.combine(p.data, p.ora_inizio)
+        if dt_inizio - now > timedelta(hours=4):
+            cancellabili.append(p.id)
     if request.method == "POST":
         elimina_id = request.POST.get("elimina")
         if elimina_id:
             Prenotazione.objects.filter(id=elimina_id, account=request.user).delete()
             return redirect('mie_prenotazioni')
-    return render(request, 'accounts/mie_prenotazioni.html', {'prenotazioni': prenotazioni})
-
+    return render(request, 'accounts/mie_prenotazioni.html', {
+        'prenotazioni': prenotazioni,
+        'cancellabili': cancellabili,
+    })
 
 def is_societario(user):
         return user.is_authenticated and user.is_societario  # Adatta secondo il tuo modello utente
@@ -248,3 +268,29 @@ def gestione_prenotazioni(request):
 def dettaglio_polisportiva(request, pk):
     polisportiva = get_object_or_404(Polisportiva, pk=pk)
     return render(request, 'accounts/dettaglio_polisportiva.html', {'polisportiva': polisportiva})
+
+@login_required
+@user_passes_test(is_societario)
+def gestione_corsi(request):
+    corsi = Corso.objects.filter(account=request.user)
+    if request.method == "POST":
+        form = CorsoForm(request.POST)
+        form.fields['campo'].queryset = Campo.objects.filter(polisportiva=request.user.polisportiva)
+        if form.is_valid():
+            corso = form.save(commit=False)
+            corso.account = request.user
+            corso.save()
+            return redirect('gestione_corsi')
+    else:
+        form = CorsoForm()
+        form.fields['campo'].queryset = Campo.objects.filter(polisportiva=request.user.polisportiva)
+    return render(request, 'accounts/gestione_corsi.html', {'form': form, 'corsi': corsi})
+
+@login_required
+@user_passes_test(is_societario)
+def elimina_corso(request, corso_id):
+    corso = get_object_or_404(Corso, id=corso_id, account=request.user)
+    if request.method == "POST":
+        corso.delete()
+        return redirect('gestione_corsi')
+    return render(request, 'accounts/conferma_elimina_corso.html', {'corso': corso})

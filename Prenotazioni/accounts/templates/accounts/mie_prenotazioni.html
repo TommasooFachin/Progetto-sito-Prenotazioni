@@ -26,12 +26,14 @@
             <td>{{ p.durata }} min</td>
             <td>{{ p.stato }}</td>
             <td>
-                <form method="post" style="display:inline;">
-                    {% csrf_token %}
-                    <button name="elimina" value="{{ p.id }}" class="btn btn-danger btn-sm" title="Elimina" onclick="return confirm('Eliminare questa prenotazione?')">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </form>
+                {% if p.id in cancellabili %}
+                    <form method="post" style="display:inline;">
+                        {% csrf_token %}
+                        <button name="elimina" value="{{ p.id }}" class="btn btn-danger btn-sm" title="Elimina" onclick="return confirm('Eliminare questa prenotazione?')">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </form>
+                {% endif %}
             </td>
             <td>
                 {% if p.pagato %}
