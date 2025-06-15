@@ -14,6 +14,8 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, user_passes_test
 from django.shortcuts import render, redirect, get_object_or_404
+from django.core.mail import send_mail
+
 
 def register(request):
     if request.method == 'POST':
@@ -135,7 +137,7 @@ def lista_polisportive(request):
 def campi_polisportiva(request, polisportiva_id):
     data = request.GET.get('data', '')
     if not data:
-        data = date.today().isoformat()  # Imposta la data di oggi se non fornita
+        data = date.today().isoformat()  # Imposta la data di oggi
     ora = request.GET.get('ora', '')
     sport = request.GET.get('sport', '')
 
@@ -176,6 +178,15 @@ def campi_polisportiva(request, polisportiva_id):
                 t = datetime.strptime(ora_corrente, "%H:%M") + timedelta(minutes=30)
                 ora_corrente = t.strftime("%H:%M")
 
+    # --- BLOCCA GLI SLOT PASSATI NELLA DATA ODIERNA ---
+    now = datetime.now()
+    if data == now.strftime("%Y-%m-%d"):
+        for campo in campi:
+            for ora in orari:
+                ora_dt = datetime.strptime(f"{data} {ora}", "%Y-%m-%d %H:%M")
+                if ora_dt < now:
+                    prenotazioni_map[campo.id][ora] = "passato"
+
     today = date.today().isoformat()
 
     return render(request, 'accounts/campi_polisportiva.html', {
@@ -187,7 +198,7 @@ def campi_polisportiva(request, polisportiva_id):
         'orari': orari,
         'prenotazioni_map': prenotazioni_map,
         'today': today,
-})
+    })
 
 @csrf_exempt
 @login_required
@@ -205,6 +216,8 @@ def prenota_ajax(request):
         ora_inizio = datetime.strptime(orari[0], "%H:%M")
         ora_fine = (datetime.strptime(orari[-1], "%H:%M") + timedelta(minutes=30)).time()
         durata = len(orari) * 30
+        importo = 5.00 * len(orari)
+        pagato = (modalita_pagamento == 'online')
         pren = Prenotazione.objects.create(
             campo=campo,
             account=request.user,
@@ -212,22 +225,19 @@ def prenota_ajax(request):
             ora_inizio=ora_inizio.time(),
             ora_fine=ora_fine,
             durata=durata,
-            costo=5.00 * len(orari),
+            costo=importo,
             stato='accettata',
-            pagato=False  # di default
+            pagato=pagato
         )
-        if modalita_pagamento == 'online':
-            # Redirect a pagina di pagamento virtuale
-            return JsonResponse({'success': True, 'redirect': f'/accounts/pagamento_online/{pren.id}/'})
+        if pagato:
+            send_mail(
+                'Conferma Prenotazione',
+                f'Pagamento effettuato con successo!\nImporto pagato: {importo:.2f} €\nGrazie per aver scelto SportBooking.',
+                'tommaso.fachin@gmail.com',
+                [request.user.email],
+                fail_silently=False,
+            )
         return JsonResponse({'success': True})
-@login_required
-def pagamento_online(request, pren_id):
-    pren = get_object_or_404(Prenotazione, id=pren_id, account=request.user)
-    if request.method == "POST":
-        pren.pagato = True
-        pren.save()
-        return render(request, 'accounts/pagamento_successo.html')
-    return render(request, 'accounts/pagamento_online.html', {'pren': pren})
     
 from datetime import datetime, timedelta
 
@@ -294,3 +304,4 @@ def elimina_corso(request, corso_id):
         corso.delete()
         return redirect('gestione_corsi')
     return render(request, 'accounts/conferma_elimina_corso.html', {'corso': corso})
+

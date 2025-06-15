@@ -165,6 +165,9 @@
 
         if (modalita === "online") {
             // Mostra il modal pagamento online
+            // Calcola l'importo in base agli orari selezionati
+            let importo = (orari.length * 5.00).toFixed(2);
+            document.getElementById('importo-pagamento').textContent = `- Importo: € ${importo}`;
             let modal = new bootstrap.Modal(document.getElementById('modalPagamentoOnline'));
             modal.show();
 
@@ -237,6 +240,7 @@ function inviaPrenotazione(campoId, data, orari, modalita_pagamento) {
           <h5 class="modal-title" id="modalPagamentoOnlineLabel">
             <i class="bi bi-credit-card-2-front" style="font-size:1.3em; color:#198754;"></i>
             Pagamento Online
+            <span id="importo-pagamento" style="font-size:1rem; color:#198754; margin-left:10px;"></span>
           </h5>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Chiudi"></button>
         </div>

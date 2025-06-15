@@ -15,7 +15,6 @@ urlpatterns = [
     path('prenota_ajax/', views.prenota_ajax, name='prenota_ajax'),
     path('mie-prenotazioni/', views.mie_prenotazioni, name='mie_prenotazioni'),
     path('polisportiva/<int:pk>/', views.dettaglio_polisportiva, name='dettaglio_polisportiva'),
-    path('pagamento_online/<int:pren_id>/', views.pagamento_online, name='pagamento_online'),
     path('gestione_corsi/', views.gestione_corsi, name='gestione_corsi'),
     path('gestione_corsi/elimina/<int:corso_id>/', elimina_corso, name='elimina_corso'),
 

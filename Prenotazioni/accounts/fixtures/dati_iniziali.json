@@ -1,0 +1,299 @@
+[
+  {
+    "model": "accounts.polisportiva",
+    "pk": 1,
+    "fields": {
+      "nome": "PlayingASD",
+      "città": "Modena",
+      "indirizzo": "Via Vittorio Padovani, 45",
+      "telefono": "3339970364",
+      "email": "info@playinasd.it"
+    }
+  },
+  {
+    "model": "accounts.polisportiva",
+    "pk": 2,
+    "fields": {
+      "nome": "San Faustino",
+      "città": "Modena",
+      "indirizzo": "Via Wiligelmo, 72",
+      "telefono": "3349970364",
+      "email": "info@sanfaustino.it"
+    }
+  },
+  {
+    "model": "accounts.polisportiva",
+    "pk": 3,
+    "fields": {
+      "nome": "Sacca",
+      "città": "Modena",
+      "indirizzo": "Via Alfonso Paltrinieri, 80",
+      "telefono": "3359970364",
+      "email": "info@sacca.it"
+    }
+  },
+  {
+    "model": "accounts.polisportiva",
+    "pk": 4,
+    "fields": {
+      "nome": "Sporting Sassuolo",
+      "città": "Sassuolo",
+      "indirizzo": "Via Vandelli, 25",
+      "telefono": "3369970364",
+      "email": "info@sportingsassuolo.it"
+    }
+  },
+  {
+    "model": "accounts.polisportiva",
+    "pk": 5,
+    "fields": {
+      "nome": "Sporting Formigine",
+      "città": "Formigine",
+      "indirizzo": "Via Caduti di Superga, 2",
+      "telefono": "3379970364",
+      "email": "info@sportingformigine.it"
+    }
+  },
+
+
+  
+
+
+
+
+
+
+
+
+
+  {
+    "model": "accounts.campo",
+    "pk": 1,
+    "fields": {
+      "nome": "Calcetto 1",
+      "superficie": "erba sintetica",
+      "tipo": "Calcio a 5",
+      "polisportiva": 1
+    }
+  },
+  {
+    "model": "accounts.campo",
+    "pk": 2,
+    "fields": {
+      "nome": "Tennis 1",
+      "superficie": "terra rossa",
+      "tipo": "tennis",
+      "polisportiva": 1
+    }
+  },
+   {
+    "model": "accounts.campo",
+    "pk": 3,
+    "fields": {
+      "nome": "Tennis 2",
+      "superficie": "erba sintetica",
+      "tipo": "tennis",
+      "polisportiva": 1
+    }
+  },
+   {
+    "model": "accounts.campo",
+    "pk": 4,
+    "fields": {
+      "nome": "Tennis 3",
+      "superficie": "erba sintetica",
+      "tipo": "tennis",
+      "polisportiva": 1
+    }
+  },
+{
+    "model": "accounts.campo",
+    "pk": 5,
+    "fields": {
+      "nome": "Padel 1",
+      "superficie": "erba sintetica",
+      "tipo": "padel",
+      "polisportiva": 1
+    }
+  },
+  {
+    "model": "accounts.campo",
+    "pk": 6,
+    "fields": {
+      "nome": "Calcio 1",
+      "superficie": "erba",
+      "tipo": "Calcio a 5",
+      "polisportiva": 2
+    }
+  },
+  {
+    "model": "accounts.campo",
+    "pk": 7,
+    "fields": {
+      "nome": "Calcio 2",
+      "superficie": "sintetico",
+      "tipo": "Calcio a 5",
+      "polisportiva": 2
+    }
+  },
+  {
+    "model": "accounts.campo",
+    "pk": 8,
+    "fields": {
+      "nome": "Tennis 1",
+      "superficie": "cemento",
+      "tipo": "tennis",
+      "polisportiva": 3
+    }
+  },
+  {
+    "model": "accounts.campo",
+    "pk": 9,
+    "fields": {
+      "nome": "Tennis 2",
+      "superficie": "erba sintetica",
+      "tipo": "tennis",
+      "polisportiva": 3
+    }
+  },
+  {
+    "model": "accounts.campo",
+    "pk": 10,
+    "fields": {
+      "nome": "Tennis 1",
+      "superficie": "terra rossa",
+      "tipo": "tennis",
+      "polisportiva": 4
+    }
+  },
+  {
+    "model": "accounts.campo",
+    "pk": 11,
+    "fields": {
+      "nome": "Tennis 2",
+      "superficie": "terra rossa",
+      "tipo": "tennis",
+      "polisportiva": 4
+    }
+  },
+  {
+    "model": "accounts.campo",
+    "pk": 12,
+    "fields": {
+      "nome": "Padel 1",
+      "superficie": "erba sintetica",
+      "tipo": "padel",
+      "polisportiva": 4
+    }
+  },
+
+  {
+    "model": "accounts.campo",
+    "pk": 13,
+    "fields": {
+      "nome": "Calcio 1",
+      "superficie": "erba sintetica",
+      "tipo": "calcio a 5",
+      "polisportiva": 5
+    }
+  },
+  {
+    "model": "accounts.campo",
+    "pk": 14,
+    "fields": {
+      "nome": "Padel 1",
+      "superficie": "sintetico",
+      "tipo": "padel",
+      "polisportiva": 5
+    }
+  },
+ {
+    "model": "accounts.campo",
+    "pk": 15,
+    "fields": {
+      "nome": "Padel 2",
+      "superficie": "sintetico",
+      "tipo": "padel",
+      "polisportiva": 5
+    }
+  },
+
+
+
+
+
+    
+
+
+
+  {
+    "model": "accounts.account",
+    "pk": 1,
+    "fields": {
+      "nome": "Mario",
+      "cognome": "Rossi",
+      "email": "societario@playingasd.it",
+      "password": "pbkdf2_sha256$260000$test$testhash", 
+      "is_societario": true,
+      "polisportiva": 1,
+      "is_active": true,
+      "is_staff": false
+    }
+  },
+  {
+    "model": "accounts.account",
+    "pk": 2,
+    "fields": {
+      "nome": "Luca",
+      "cognome": "Bianchi",
+      "email": "societario@sanfaustino.it",
+      "password": "pbkdf2_sha256$260000$test$testhash",
+      "is_societario": true,
+      "polisportiva": 2,
+      "is_active": true,
+      "is_staff": false
+    }
+  },
+  {
+    "model": "accounts.account",
+    "pk": 3,
+    "fields": {
+      "nome": "Giulia",
+      "cognome": "Verdi",
+      "email": "societario@sacca.it",
+      "password": "pbkdf2_sha256$260000$test$testhash",
+      "is_societario": true,
+      "polisportiva": 3,
+      "is_active": true,
+      "is_staff": false
+    }
+  },
+  {
+    "model": "accounts.account",
+    "pk": 4,
+    "fields": {
+      "nome": "Anna",
+      "cognome": "Neri",
+      "email": "societario@sportingsassuolo.it",
+      "password": "pbkdf2_sha256$260000$test$testhash",
+      "is_societario": true,
+      "polisportiva": 4,
+      "is_active": true,
+      "is_staff": false
+    }
+  },
+  {
+    "model": "accounts.account",
+    "pk": 5,
+    "fields": {
+      "nome": "Paolo",
+      "cognome": "Blu",
+      "email": "societario@sportingformigine.it",
+      "password": "pbkdf2_sha256$260000$test$testhash",
+      "is_societario": true,
+      "polisportiva": 5,
+      "is_active": true,
+      "is_staff": false
+    }
+  }
+]
