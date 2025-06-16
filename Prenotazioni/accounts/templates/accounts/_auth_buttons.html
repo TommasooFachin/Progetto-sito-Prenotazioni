@@ -1,8 +1,11 @@
 {% if user.is_authenticated %}
     <form action="{% url 'logout' %}" method="post" style="display:inline;">
-        {% csrf_token %}
+        {% csrf_token %}   <!-- token CSRF per la sicurezza -->
         <button type="submit">Logout</button>
     </form>
 {% else %}
     <a href="{% url 'login' %}"><button>Login</button></a>
 {% endif %}
+
+
+<!-- questo file mostra i bottoni di login o logout a seconda che l'utente sia autenticato o meno -->

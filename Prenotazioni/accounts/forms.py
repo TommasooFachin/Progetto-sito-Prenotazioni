@@ -18,6 +18,7 @@ class RegisterForm(forms.ModelForm):
         if Account.objects.filter(email=email).exists():
             raise forms.ValidationError("La mail inserita è già stata utilizzata.")
         return email
+    
     # per fare il salvataggio della password in modo sicuro.
     def save(self, commit=True):
         user = super().save(commit=False)

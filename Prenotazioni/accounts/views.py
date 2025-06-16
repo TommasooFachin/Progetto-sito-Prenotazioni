@@ -29,7 +29,7 @@ def register(request):
                 is_societario=False  # forza sempre a False
             )
             # Passa una variabile per mostrare la spunta
-            return render(request, 'accounts/register.html', {'form': RegisterForm(), 'success': True})
+            return render(request, 'accounts/register.html', {'form': RegisterForm(), 'success': True})  #restituisce la risposta http e passa al template 2 variabili: form e success(quest'ultima serve per mostrare la spunta di avvenuta registrazione)
     else:
         form = RegisterForm()
     return render(request, 'accounts/register.html', {'form': form})
@@ -46,7 +46,7 @@ class CustomLoginView(LoginView):
 @login_required
 def gestione_polisportiva(request):
     user = request.user
-    polisportiva = user.polisportiva  # Assumendo che l'utente abbia il campo polisportiva
+    polisportiva = user.polisportiva  
 
     if request.method == 'POST':
         form = CampoForm(request.POST)
@@ -84,7 +84,7 @@ def gestione_campi(request):
     return render(request, 'accounts/gestione_campi.html', {'form': form, 'campi': campi, 'polisportiva': polisportiva})
 
 def gestione_prenotazioni(request):
-    # Per ora solo una pagina vuota
+    
     return render(request, 'accounts/gestione_prenotazioni.html')
 
 
@@ -99,7 +99,7 @@ def lista_polisportive(request):
     # Filtro città/società
     if citta:
         polisportive = polisportive.filter(
-            Q(nome__icontains=citta) | Q(città__icontains=citta)
+            Q(nome__icontains=citta) | Q(città__icontains=citta)    # Usa Q per cercare in più campi
         )
 
     # Filtro sport
@@ -153,34 +153,43 @@ def campi_polisportiva(request, polisportiva_id):
         "20:00","20:30","21:00","21:30","22:00","22:30","23:00"
     ]
 
-    # Costruisci una mappa: campo_id -> {ora: prenotato}
+    # --- BLOCCA TUTTI GLI SLOT SE IL GIORNO È PASSATO ---
+    oggi = date.today()
+    data_selezionata = datetime.strptime(data, "%Y-%m-%d").date()
+    giorno_passato = data_selezionata < oggi
+
     prenotazioni_map = {}
     for campo in campi:
         prenotazioni_map[campo.id] = {o: False for o in orari}
-        # Blocca slot già prenotati
-        prenotazioni = campo.prenotazioni.filter(data=data, stato='accettata')
-        for pren in prenotazioni:
-            ora_corrente = pren.ora_inizio.strftime("%H:%M")
-            ora_fine = pren.ora_fine.strftime("%H:%M")
-            while ora_corrente != ora_fine:
-                if ora_corrente in prenotazioni_map[campo.id]:
-                    prenotazioni_map[campo.id][ora_corrente] = True
-                t = datetime.strptime(ora_corrente, "%H:%M") + timedelta(minutes=30)
-                ora_corrente = t.strftime("%H:%M")
-        # Blocca slot occupati dai corsi
-        corsi = campo.corsi.filter(data_inizio__lte=data, data_fine__gte=data)
-        for corso in corsi:
-            ora_corrente = corso.ora_inizio.strftime("%H:%M")
-            ora_fine = corso.ora_fine.strftime("%H:%M")
-            while ora_corrente != ora_fine:
-                if ora_corrente in prenotazioni_map[campo.id]:
-                    prenotazioni_map[campo.id][ora_corrente] = True
-                t = datetime.strptime(ora_corrente, "%H:%M") + timedelta(minutes=30)
-                ora_corrente = t.strftime("%H:%M")
+        if giorno_passato:
+            # Segna tutti gli slot come "passato"
+            for o in orari:
+                prenotazioni_map[campo.id][o] = "passato"
+        else:
+            # Blocca slot già prenotati
+            prenotazioni = campo.prenotazioni.filter(data=data, stato='accettata')
+            for pren in prenotazioni:
+                ora_corrente = pren.ora_inizio.strftime("%H:%M")
+                ora_fine = pren.ora_fine.strftime("%H:%M")
+                while ora_corrente != ora_fine:
+                    if ora_corrente in prenotazioni_map[campo.id]:
+                        prenotazioni_map[campo.id][ora_corrente] = True
+                    t = datetime.strptime(ora_corrente, "%H:%M") + timedelta(minutes=30)
+                    ora_corrente = t.strftime("%H:%M")
+            # Blocca slot occupati dai corsi
+            corsi = campo.corsi.filter(data_inizio__lte=data, data_fine__gte=data)
+            for corso in corsi:
+                ora_corrente = corso.ora_inizio.strftime("%H:%M")
+                ora_fine = corso.ora_fine.strftime("%H:%M")
+                while ora_corrente != ora_fine:
+                    if ora_corrente in prenotazioni_map[campo.id]:
+                        prenotazioni_map[campo.id][ora_corrente] = True
+                    t = datetime.strptime(ora_corrente, "%H:%M") + timedelta(minutes=30)
+                    ora_corrente = t.strftime("%H:%M")
 
     # --- BLOCCA GLI SLOT PASSATI NELLA DATA ODIERNA ---
     now = datetime.now()
-    if data == now.strftime("%Y-%m-%d"):
+    if data == now.strftime("%Y-%m-%d") and not giorno_passato:
         for campo in campi:
             for ora in orari:
                 ora_dt = datetime.strptime(f"{data} {ora}", "%Y-%m-%d %H:%M")
@@ -198,6 +207,7 @@ def campi_polisportiva(request, polisportiva_id):
         'orari': orari,
         'prenotazioni_map': prenotazioni_map,
         'today': today,
+        'giorno_passato': giorno_passato,  # <-- aggiunto per il template
     })
 
 @csrf_exempt
@@ -261,7 +271,7 @@ def mie_prenotazioni(request):
     })
 
 def is_societario(user):
-        return user.is_authenticated and user.is_societario  # Adatta secondo il tuo modello utente
+        return user.is_authenticated and user.is_societario  
 
 @login_required
 @user_passes_test(is_societario)

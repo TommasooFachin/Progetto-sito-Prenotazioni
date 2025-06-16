@@ -36,7 +36,17 @@
         &#10004; CONFERMA PRENOTAZIONE
     </button>
 </div>
-    
+<!-- Modalità di pagamento centrata sopra la tabella -->
+<div class="d-flex justify-content-center mb-3">
+    <div class="mb-3" style="width: 100%; max-width: 260px;">
+        <label for="modalita_pagamento" class="mb-1" style="font-size: 1em;"><strong>Modalità di pagamento:</strong></label>
+        <select id="modalita_pagamento" class="form-select form-select-sm" required>
+            <option value="struttura">In struttura</option>
+            <option value="online">Online</option>
+        </select>
+    </div>
+</div>
+    <!-- Tabella orari -->  
 <div class="row justify-content-center align-items-start mb-4">
         <!-- Colonna tabella orari -->
         <div class="col-md-9">
@@ -57,7 +67,7 @@
                         {% for ora in orari %}
                         <tr>
                             <td style="font-weight:bold;">{{ ora }}</td>
-                            {% for campo in campi %}
+                            {% for campo in campi %}  <!-- qui prenotazioni_map è un dizionario annidato e il filtro dict_get permette di accedere dinamicamente ai valori usando le variabili campo.id e ora -->
                                 {% with prenotato=prenotazioni_map|dict_get:campo.id|dict_get:ora %}
                                     {% if not prenotato %}
                                         <td class="disponibile" data-campo="{{ campo.id }}" data-ora="{{ ora }}"></td>
@@ -72,16 +82,6 @@
                 </table>
             </div>
         </div>
-        <!-- Colonna select pagamento a destra -->
-        <div class="col-md-3 d-flex flex-column align-items-start align-items-md-end" style="margin-left:-400px; margin-top:50px;">
-            <div class="mb-3" style="width: 100%; max-width: 220px;">
-                <label for="modalita_pagamento" class="mb-1" style="font-size: 1em;"><strong>Modalità di pagamento:</strong></label>
-                <select id="modalita_pagamento" class="form-select form-select-sm" required>
-                    <option value="struttura">In struttura</option>
-                    <option value="online">Online</option>
-                </select>
-            </div>
-        </div>
     </div>
     <div style="text-align:center; margin-bottom:40px;">
         <a href="{% url 'lista_polisportive' %}?citta={{ request.GET.citta }}&sport={{ sport }}&data={{ data }}&ora={{ ora }}" style="color:#2980b9; font-weight:bold;">Torna alle polisportive</a>
@@ -90,7 +90,7 @@
     let isMouseDown = false;
     let startCell = null;
     let selectedCells = [];
-
+        // Gestione selezione multipla delle celle
     document.querySelectorAll('.tabella-orari').forEach(function(tabella) {
         function clearSelection() {
             selectedCells.forEach(td => td.classList.remove('selected-multi'));
@@ -197,7 +197,7 @@
             }
         }
     });
-
+//invio prenotazione AJAX con prenota_ajax
 function inviaPrenotazione(campoId, data, orari, modalita_pagamento) {
     fetch("{% url 'prenota_ajax' %}", {
         method: "POST",
@@ -231,7 +231,7 @@ function inviaPrenotazione(campoId, data, orari, modalita_pagamento) {
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-<!-- Modal pagamento online -->
+<!-- finestra Modal pagamento online -->
 <div class="modal fade" id="modalPagamentoOnline" tabindex="-1" aria-labelledby="modalPagamentoOnlineLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
