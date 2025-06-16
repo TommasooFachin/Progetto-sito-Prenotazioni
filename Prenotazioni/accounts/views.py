@@ -153,7 +153,7 @@ def campi_polisportiva(request, polisportiva_id):
         "20:00","20:30","21:00","21:30","22:00","22:30","23:00"
     ]
 
-    # --- BLOCCA TUTTI GLI SLOT SE IL GIORNO È PASSATO ---
+    # --- BLOCCA TUTTI GLI SLOT SE IL GIORNO È PASSATO --- dopo ogni controllo assegno prenotazioni_map[campo.id][o] = "passato" o true. poi controllo e coloro la cella nel css
     oggi = date.today()
     data_selezionata = datetime.strptime(data, "%Y-%m-%d").date()
     giorno_passato = data_selezionata < oggi
