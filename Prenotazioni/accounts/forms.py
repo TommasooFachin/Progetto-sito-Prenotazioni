@@ -46,3 +46,27 @@ class CorsoForm(forms.ModelForm):
             'ora_inizio': forms.TimeInput(attrs={'type': 'time'}),
             'ora_fine': forms.TimeInput(attrs={'type': 'time'}),
         }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        campo = cleaned_data.get('campo')
+        data_inizio = cleaned_data.get('data_inizio')
+        data_fine = cleaned_data.get('data_fine')
+        ora_inizio = cleaned_data.get('ora_inizio')
+        ora_fine = cleaned_data.get('ora_fine')
+
+        if campo and data_inizio and data_fine and ora_inizio and ora_fine:
+            # Cerca corsi che si sovrappongono nello stesso campo e intervallo di date/ore
+            overlapping = Corso.objects.filter(
+                campo=campo,
+                data_inizio__lte=data_fine,
+                data_fine__gte=data_inizio,
+            ).exclude(pk=self.instance.pk)
+
+            for corso in overlapping:
+                # Controlla se c'è sovrapposizione di orari
+                if not (ora_fine <= corso.ora_inizio or ora_inizio >= corso.ora_fine):
+                    raise forms.ValidationError(
+                        "Esiste già un corso nello stesso campo e orario in queste date."
+                    )
+        return cleaned_data
